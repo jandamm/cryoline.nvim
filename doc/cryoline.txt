@@ -1,0 +1,103 @@
+==============================================================================
+INTRODUCTION                *cryoline* *cryoline.nvim* *cryoline-introduction*
+
+Cryoline - CReate Your Own statusline.
+
+The statusline plugin for everyone who doesn't need a plugin to write their
+statusline but wants a declarative approach.
+
+Cryoline does not contain any predefined components. You have to write your own
+statusline string.
+
+==============================================================================
+CONFIGURATION                                                *cryoline-config*
+
+You can configure cryoline like this (in lua):
+>
+  require("cryoline").config {
+    force_ft = { "qf", "help" },
+    resolve_ft = function(context)
+      local ft = context.ft
+      if
+        ft == "fugitive"
+        or ft == "gitcommit"
+        or string.match(vim.api.nvim_buf_get_name(context.bufnr), "^fugitive://")
+      then
+        return 'git'
+      end
+    end,
+    ft = {
+      git = "git: %f%=:)",
+      lua = function(context)
+        return (context.active and "%#Error#" or "") .. "%f%=lua is nice!"
+      end,
+      qf = "%q%=:)"
+    },
+    line = function(context)
+      local line = "%f%*%=:)%=%y"
+      if context.active then
+        line = "%#WarningMsg#" .. line
+      end
+      return line
+    end
+  }
+<
+
+Checkout |'statusline'| to learn how to write a statusline string.
+Everything that works there can be used with cryoline as well.
+
+                                                            *cryoline-context*
+The context provided to create a statusline: >
+  {
+    active      = bool,   -- is the window active
+    bufnr       = number, -- number of current buffer in window
+    resolved_ft = string, -- return value of resolve_ft (if used)
+    ft          = string, -- filetype used in window
+    winid       = number, -- id of the window
+  }
+<
+                                                               *cryoline-line*
+The default statusline string.
+This can either be a `string` or a `function` which takes a |cryoline-context| and
+returns a `string`. >
+  line = function(context)
+    return context.active and "%#Warning#%f" or "%f"
+  end
+<
+                                                                 *cryoline-ft*
+The configuration (`table`) on a per filetype basis. This does not have to be a real
+filetype. It can be any string. Use |cryoline-resolve_ft| to map multiple
+filetypes into one "meta-filetype".
+Define the statusline similar to |cryoline-line|. >
+  ft = {
+    qf = "%q",
+    help = "%f %h",
+    light_line = "%f%=:)"
+  }
+<
+                                                           *cryoline-force_ft*
+Define a `table` of filetypes where you want to use your own statusline. This
+will be primarily filetypes of plugins or special buffers. >
+  force_ft = {
+    "qf",
+    "help",
+    "man"
+  }
+<
+                                                         *cryoline-resolve_ft*
+Use this `function` to overwrite the filetype of the current buffer. This is
+helpful if you want to use one statusline for multiple filetypes.
+For example using one statusline for git related windows. >
+  resolve_ft = function(context)
+    local ft = context.ft
+    if
+      ft == "fugitive"
+      or ft == "gitcommit"
+      or string.match(vim.api.nvim_buf_get_name(context.bufnr), "^fugitive://")
+    then
+      return 'git'
+    end
+  end,
+<
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
