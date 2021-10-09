@@ -84,6 +84,7 @@ Define the statusline similar to |cryoline-line|. >
   }
 <
                                                            *cryoline-force_ft*
+Convience method for `force_autocmd.Filetype` (|cryoline-force_autocmd|).
 Define a `table` of filetypes where you want to use your own statusline. This
 will be primarily filetypes of plugins or special buffers. >
   force_ft = {
@@ -92,6 +93,24 @@ will be primarily filetypes of plugins or special buffers. >
     "man"
   }
 <
+                                                      *cryoline-force_autocmd*
+Define a `table` of |autocmd-events| which has a `table` of |autocommand-pattern|.
+In most cases |cryoline-force_ft| will probably sufficient. In case more
+granularity is needed this api can be used. See |autocmd| for help.
+>
+  force_autocmd = {
+    WinEnter = { "*" }, -- force statusline whenever a window is entered.
+    Filetype = {        -- The same as force_ft.
+      "qf",
+      "help",
+      "man"
+    }
+  }
+<
+The main benefit is to catch more cases where a statusline should be
+overwritten. There may still be cases where |autocmd|s aren't enough.
+See |cryoline-get_statusline|.
+
                                                          *cryoline-resolve_ft*
 Use this `function` to overwrite the filetype of the current buffer. This is
 helpful if you want to use one statusline for multiple filetypes.

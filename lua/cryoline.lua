@@ -10,6 +10,12 @@ function M.config(user_config)
 		if type(user_config) == "function" or type(user_config) == "string" then
 			config.line = user_config
 		elseif type(user_config) == "table" then
+			if user_config.force_ft then
+				local au = user_config.force_autocmd or {}
+				au.Filetype = vim.tbl_extend("keep", au.Filetype or {}, user_config.force_ft)
+				user_config.force_autocmd = au
+				user_config.force_ft = nil
+			end
 			config = vim.tbl_extend("keep", user_config, config)
 		else
 			error("Cryoline setup needs a table, function or string, not " .. type(user_config) .. ".")
@@ -18,10 +24,10 @@ function M.config(user_config)
 
 	local line = M.get_statusline()
 	vim.opt.statusline = line
-	if config.force_ft then
+	if config.force_autocmd then
 		vim.cmd("augroup cryoline | autocmd! | augroup END")
-		for _, ft in pairs(config.force_ft) do
-			vim.cmd("autocmd cryoline Filetype " .. ft .. " setlocal statusline=" .. line)
+		for au, pat in pairs(config.force_autocmd) do
+			vim.cmd("autocmd cryoline " .. au .. " " .. table.concat(pat, ",") .. " setlocal statusline=" .. line)
 		end
 	end
 end
