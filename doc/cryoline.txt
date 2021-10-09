@@ -113,5 +113,14 @@ context here. If you want to extend/mutate the context use
     end
   end,
 <
+                                                     *cryoline-get_statusline*
+Function that returns the string to set to the statusline. This is needed when
+a plugin disables autocommands (|noautocmd|) and therefore cannot be forced by
+cryoline to use the statusline. In those cases a custom solution has to be
+found. Then this code can be used to set the statusline for the window:
+>
+  vim.wo.statusline = require("cryoline").get_statusline()
+<
+
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:

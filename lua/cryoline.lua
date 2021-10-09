@@ -1,6 +1,10 @@
 local M = {}
 local config = { line = "%#WarningMsg#%f %h%w%m%r %=%#Error# Cryoline %#WarningMsg#%=%(%l,%c%V %= %P%)" }
 
+function M.get_statusline()
+	return "%!v:lua.require'cryoline'.line()"
+end
+
 function M.config(user_config)
 	if user_config then
 		if type(user_config) == "function" or type(user_config) == "string" then
@@ -12,7 +16,7 @@ function M.config(user_config)
 		end
 	end
 
-	local line = "%!v:lua.require'cryoline'.line()"
+	local line = M.get_statusline()
 	vim.opt.statusline = line
 	if config.force_ft then
 		vim.cmd("augroup cryoline | autocmd! | augroup END")
