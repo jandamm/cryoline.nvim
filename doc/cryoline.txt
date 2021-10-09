@@ -56,6 +56,14 @@ The context provided to create a statusline: >
     winid       = number, -- id of the window
   }
 <
+                                                     *cryoline-extend_context*
+Allows you to add additional values to the context you want to use in your
+statusline functions. For example if you prefer then |winnr| over the |winid|
+you could do this: >
+  extend_context = function(context)
+    context.winnr = vim.api.nvim_win_get_number(context.winid)
+  end
+<
                                                                *cryoline-line*
 The default statusline string.
 This can either be a `string` or a `function` which takes a |cryoline-context| and
@@ -87,7 +95,13 @@ will be primarily filetypes of plugins or special buffers. >
                                                          *cryoline-resolve_ft*
 Use this `function` to overwrite the filetype of the current buffer. This is
 helpful if you want to use one statusline for multiple filetypes.
-For example using one statusline for git related windows. >
+The return value of this string is then available in the statusline function.
+For example using one statusline for git related windows.
+
+Be aware that the context is mutable but it's not adviced to mutate the
+context here. If you want to extend/mutate the context use
+|cryoline-extend_context|.
+>
   resolve_ft = function(context)
     local ft = context.ft
     if

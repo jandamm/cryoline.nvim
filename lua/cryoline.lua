@@ -25,17 +25,21 @@ end
 function M.line()
 	local winid = vim.g.statusline_winid
 	local bufnr = vim.api.nvim_win_get_buf(winid)
+	local ft = vim.api.nvim_buf_get_option(bufnr, "filetype")
 	local context = {
 		active = winid == vim.api.nvim_get_current_win(),
 		bufnr = bufnr,
-		ft = vim.api.nvim_buf_get_option(bufnr, "filetype"),
+		ft = ft,
 		winid = winid,
 	}
-	context.resolved_ft = config.ft and config.resolve_ft and config.resolve_ft(vim.deepcopy(context))
-	local line = config.ft and config.ft[context.resolved_ft or context.ft] or config.line
+	context.resolved_ft = config.ft and config.resolve_ft and config.resolve_ft(context)
+	local line = config.ft and config.ft[context.resolved_ft or ft] or config.line
 	if type(line) == "string" then
 		return line
 	elseif type(line) == "function" then
+		if config.extend_context then
+			config.extend_context(context)
+		end
 		return line(context)
 	end
 	return "%#Error#%f%=Cryoline: Not configured correctly. Line type for " .. context.ft .. " is " .. type(line) .. "."
