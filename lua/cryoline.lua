@@ -27,7 +27,8 @@ function M.config(user_config)
 	if config.force_autocmd then
 		vim.cmd 'augroup cryoline | autocmd! | augroup END'
 		for au, pat in pairs(config.force_autocmd) do
-			vim.cmd('autocmd cryoline ' .. au .. ' ' .. table.concat(pat, ',') .. ' setlocal statusline=' .. line)
+			local cmd = au .. ' ' .. table.concat(pat, ',')
+			vim.cmd('autocmd cryoline ' .. cmd .. ' lua vim.schedule(function() vim.wo.statusline = "' .. line .. '" end)')
 		end
 	end
 end
