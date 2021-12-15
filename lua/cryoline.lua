@@ -51,7 +51,7 @@ function M.line()
 		if config.extend_context then
 			config.extend_context(context)
 		end
-		return line(context)
+		return line(context) or ''
 	end
 	return '%#Error#%f%=Cryoline: Not configured correctly. Line type for ' .. context.ft .. ' is ' .. type(line) .. '.'
 end
